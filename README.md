@@ -1,4 +1,4 @@
-Overview
+Summary
 --------
 This is a nodeJS/mySQL command-line app that clones the business logic of an online retailer.
 
