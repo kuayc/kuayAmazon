@@ -1,113 +1,53 @@
-// @author: Thomas Thompson
-// @github: tomtom28
-// @comment: Homework 12 - Bamazon SQL and Node app
-
-
-
-// Require prompt node package 
-var prompt = require('prompt');
-
-// Require mySQL node package
-var mysql = require('mysql');
-
-// Require my homegrown table padding function
-var padText = require('./padTable.js')
-
-
-// Link to mySQL Database
-var connection = mysql.createConnection({
+const prompt = require('prompt');
+const mysql = require('mysql');
+const connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
-    user: "root", //Your username
-    password: "Iforget123", //Your password
+    user: "kuayc"
+    password: "seowkao22"
     database: "Bamazon"
 });
-
-// Connect to Database
 connection.connect(function(err) {
     if (err) throw err;
-    console.log("connected as id " + connection.threadId);
+    console.log("connected");
 });
-
-
-
-// Display All Items inside Database and sell an item to customer
-connection.query('SELECT * FROM Products', function(err, res){
-  
-  // Error Handler
+connection.query("SELECT * FROM Products", function(err, res){  
   if(err) throw err;
-
-
-  // Show User message
-  console.log('Check out our selection...\n');
-
-  // Set up table header
-  console.log('  ID  |      Product Name      |  Department Name  |   Price  | In Stock');
-  console.log('- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ')
-  
-  // Loop through database and show all items
-  for(var i = 0; i < res.length; i++){
-
-    // ---------- Add in padding for table ----------
-    var itemID = res[i].ItemID + ''; // convert to string
-    itemID = padText("  ID  ", itemID);
-
-    var productName = res[i].ProductName + ''; // convert to string
-    productName = padText("      Product Name      ", productName);
-
-    var departmentName = res[i].DepartmentName + ''; // convert to string
+  console.log("Check out our selection");
+  console.log(" ID | Product Name | Department Name | Price | In Stock");
+  for(let i=0; i<res.length; i++){
+    let productName = res[i].ProductName + '';
+    productName = padText("Product Name", productName);
+    let departmentName = res[i].DepartmentName + '';
     departmentName = padText("  Department Name  ", departmentName);
-
-    var price = '$' + res[i].Price.toFixed(2) + ''; // convert to string
-    price = padText("   Price  ", price);
-
-    var quantity = res[i].StockQuantity + ''; // convert to string (no need to pad)
-    // ----------------------------------------------
-
-    // Log table entry
+    let price = '$' + res[i].Price.toFixed(2) + '';
+    price = padText("Price", price);
+    let quantity = res[i].StockQuantity + '';
     console.log(itemID + '|' + productName + '|' + departmentName + '|' + price + '|    ' + quantity);
   }
-
-  // =================================================================================================
-
-  // After the table is shown, ask the user to buy something
   prompt.start();
-
-  // Ask for Item ID
-  console.log('\nWhich item do you want to buy?');
-  prompt.get(['buyItemID'], function (err, result) {
-    
-    // Show Item ID selected
-    var buyItemID = result.buyItemID;
-    console.log('You selected Item # ' + buyItemID + '.');
-
-    // Then ask for Quanity (once user completed first entry)
-    console.log('\nHow many do you wish to buy?')
-    prompt.get(['buyItemQuantity'], function (err, result) {
-
-      // Show quantity selected
-      var buyItemQuantity = result.buyItemQuantity;
-      console.log('You selected to buy ' + buyItemQuantity + ' of these.');
-
-      // Once the customer has placed the order, check if store has enough of the product to meet the request
-      connection.query('SELECT StockQuantity FROM Products WHERE ?', [{ItemID: buyItemID}], function(err, res){
-        if(err) throw err; // Error Handler
-        // Check if the item Id was valid (i.e. something was returned from mySQL)
-        if(res[0] == undefined){
-          console.log('Sorry... We found no items with Item ID "' +  buyItemID + '"');
-          connection.end(); // end the script/connection
-        }
-        // Valid Item ID, so compare Bamazon Inventory with user quantity 
-        else{
-          var bamazonQuantity = res[0].StockQuantity;
-          // Sufficient inventory
-          if(bamazonQuantity >= buyItemQuantity){
-
-            // Update mySQL database with reduced inventory
-            var newInventory = parseInt(bamazonQuantity) - parseInt(buyItemQuantity); // ensure we have integers for subtraction & database
-            connection.query('UPDATE Products SET ? WHERE ?', [{StockQuantity: newInventory}, {ItemID: buyItemID}], function(err, res){
-              if(err) throw err; // Error Handler
-            }); // end inventory update query
+  console.log("Which item to buy?");
+  prompt.get(["buyItemID"], function (err, result) {
+  let buyItemID = result.buyItemID;
+  console.log("You selected Item # " + buyItemID + ".");
+  console.log("How many do you wish to buy?")
+  prompt.get(["buyItemQuantity"], function (err, result) {
+  let buyItemQuantity = result.buyItemQuantity;
+  console.log("You are buying " + buyItemQuantity + " units.");
+  
+  connection.query('SELECT StockQuantity FROM Products WHERE ?', [{ItemID: buyItemID}], function(err, res){
+  if(err) throw err;
+  if(res[0] == undefined){
+  console.log("Sorry, no items with Item ID: " +  buyItemID);
+  connection.end();
+  }
+  else{
+  let bamazonQuantity = res[0].StockQuantity;
+  if(bamazonQuantity >= buyItemQuantity){
+  let newInventory = parseInt(bamazonQuantity) - parseInt(buyItemQuantity);
+  connection.query("UPDATE Products SET ? WHERE ?", [{StockQuantity: newInventory}, {ItemID: buyItemID}], function(err, res){
+  if(err) throw err;
+  });
 
 
             // Show customer their purchase total (need to query the price info from database)
