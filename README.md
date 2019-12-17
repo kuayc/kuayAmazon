@@ -1,6 +1,6 @@
 Overview
 --------
-This is a nodeJS & mySQL command-line app that clones the business logic of an online retailer.
+This is a nodeJS/mySQL command-line app that clones the business logic of an online retailer.
 
 Node.js
 -------
@@ -12,7 +12,7 @@ Receives orders from customers and interacts with mySQL to deplete stock from th
 
 BamazonManager.js
 -----------------
-A warehouse management system that provids managers with a list of options to view and adjust inventory.
+A warehouse management system that provides a list of options to view/adjust inventory.
 A sample of the menu:
 View Products for Sale
 View Low Inventory
