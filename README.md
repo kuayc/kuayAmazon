@@ -20,5 +20,6 @@ Add to Inventory
 Add New Product
 
 MySQL
+-----
 The JS files above query a MySQL database called Bamazon which is locally hosted on my laptop.
 Please refer to the schema.sql file to see how the database was created using raw SQL queries.
