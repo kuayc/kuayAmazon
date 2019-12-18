@@ -44,7 +44,6 @@ connection.connect(function(err) {
     }
   });
 });
-
 function viewProducts(callback){
   connection.query('SELECT * FROM Products', function(err, res){
     if(err) throw err;
@@ -59,7 +58,6 @@ function viewProducts(callback){
       departmentName = ("  Department Name  ", departmentName);
       let price = "$" + res[i].Price.toFixed(2);
       price = ("   Price  ", price);
-
       let quantity = res[i].StockQuantity + '';
       console.log(itemID + "|" + productName + "|" + departmentName + "|" + price + "|    " + quantity);
     }
